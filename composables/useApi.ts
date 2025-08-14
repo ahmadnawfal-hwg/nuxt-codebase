@@ -1,9 +1,10 @@
-import type { ApiOptions } from '~/types/api';
+import { AxiosError } from 'axios';
+import type { ApiOptions, ApiError } from '~/types/api'; // Pastikan ApiError didefinisikan di sini
 
 export const useApi = () => {
   const { $axios } = useNuxtApp();
 
-  async function request<T = any>(
+  async function request<T>(
     method: 'get' | 'post' | 'put' | 'delete',
     url: string,
     options: ApiOptions<T> = {},
@@ -11,7 +12,7 @@ export const useApi = () => {
     const { params, data, onSuccess, onError, onSettled } = options;
 
     let result: T | null = null;
-    let error: any = null;
+    let error: ApiError | null = null;
 
     try {
       const response = await $axios.request<T>({
@@ -23,12 +24,27 @@ export const useApi = () => {
 
       result = response.data;
       onSuccess?.(result);
-    } catch (err: any) {
-      error = {
-        statusCode: err.response?.status || 500,
-        message:
-          err.response?.data?.message || err.message || 'An error occurred',
-      };
+    } catch (err: unknown) {
+      if (err instanceof AxiosError && err.response) {
+        error = {
+          statusCode: err.response.status,
+          message:
+            err.response.data?.message ||
+            err.message ||
+            'An error occurred from server response',
+        };
+      } else if (err instanceof Error) {
+        error = {
+          statusCode: 500,
+          message: err.message,
+        };
+      } else {
+        error = {
+          statusCode: 500,
+          message: 'An unknown error occurred',
+        };
+      }
+
       onError?.(error);
     } finally {
       onSettled?.();
@@ -38,13 +54,11 @@ export const useApi = () => {
   }
 
   return {
-    get: <T = any>(url: string, opts?: ApiOptions<T>) =>
-      request<T>('get', url, opts),
-    post: <T = any>(url: string, opts?: ApiOptions<T>) =>
+    get: <T>(url: string, opts?: ApiOptions<T>) => request<T>('get', url, opts),
+    post: <T>(url: string, opts?: ApiOptions<T>) =>
       request<T>('post', url, opts),
-    put: <T = any>(url: string, opts?: ApiOptions<T>) =>
-      request<T>('put', url, opts),
-    del: <T = any>(url: string, opts?: ApiOptions<T>) =>
+    put: <T>(url: string, opts?: ApiOptions<T>) => request<T>('put', url, opts),
+    delete: <T>(url: string, opts?: ApiOptions<T>) =>
       request<T>('delete', url, opts),
   };
 };

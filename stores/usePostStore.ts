@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { ApiCallbacks } from '~/types/api';
+import type { ApiCallbacks, ApiError } from '~/types/api';
 
 type Post = {
   id: number;
@@ -8,18 +8,13 @@ type Post = {
   userId: number;
 };
 
-type errorResponse = {
-  statusCode: number;
-  message: string;
-};
-
 type PostPayload = Omit<Post, 'id'>;
 
 export const usePostStore = defineStore('post', {
   state: () => ({
     data: [] as Post[],
     isLoading: true,
-    error: null as errorResponse | null,
+    error: null as ApiError | null,
   }),
 
   actions: {

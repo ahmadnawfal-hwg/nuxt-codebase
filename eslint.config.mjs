@@ -7,7 +7,14 @@ import vuePlugin from 'eslint-plugin-vue';
 import vueParser from 'vue-eslint-parser';
 
 export default withNuxt({
-  ignores: ['**/node_modules/**', '.output', '.nuxt', 'dist', 'commitlint.config.cjs', 'eslint.config.mjs'],
+  ignores: [
+    '**/node_modules/**',
+    '.output',
+    '.nuxt',
+    'dist',
+    'commitlint.config.cjs',
+    'eslint.config.mjs',
+  ],
   plugins: {
     prettier: eslintPluginPrettier,
     '@typescript-eslint': pluginTs,
@@ -84,11 +91,12 @@ export default withNuxt({
     'object-curly-spacing': ['error', 'always'],
     semi: ['error', 'always'],
     quotes: ['error', 'single'],
-    indent: ['error', 2],
+    indent: 'off',
     'import/no-extraneous-dependencies': 'off',
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     'vue/html-indent': 'off',
+    'vue/html-self-closing': 'off',
   },
 });

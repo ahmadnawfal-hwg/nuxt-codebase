@@ -1,3 +1,14 @@
+<script setup lang="ts">
+defineProps<{
+  loading?: boolean;
+  error?: {
+    statusCode?: number;
+    message: string;
+    statusMessage?: string;
+  } | null;
+}>();
+</script>
+
 <template>
   <!-- Loading -->
   <div v-if="loading" :key="'loading-' + $route.fullPath">
@@ -8,7 +19,7 @@
   <div v-else-if="error" key="error">
     <slot name="error">
       <ErrorBlock
-        :status="error.statusCode"
+        :status="error.statusCode || 500"
         :message="error.statusMessage || error.message"
       />
     </slot>
@@ -19,14 +30,3 @@
     <slot />
   </div>
 </template>
-
-<script setup lang="ts">
-defineProps<{
-  loading?: boolean;
-  error?: {
-    statusCode: number;
-    message: string;
-    statusMessage?: string;
-  } | null;
-}>();
-</script>

@@ -6,7 +6,6 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
   modules: [
-    '@nuxt/ui',
     '@nuxt/eslint',
     '@nuxt/image',
     '@nuxt/scripts',
@@ -23,6 +22,29 @@ export default defineNuxtConfig({
     dirs: ['composables'],
   },
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [
+      tailwindcss(),
+      {
+        apply: 'build',
+        name: 'vite-plugin-ignore-sourcemap-warnings',
+        configResolved(config) {
+          const originalOnWarn = config.build.rollupOptions.onwarn;
+          config.build.rollupOptions.onwarn = (warning, warn) => {
+            if (
+              warning.code === 'SOURCEMAP_BROKEN' &&
+              warning.plugin === '@tailwindcss/vite:generate:build'
+            ) {
+              return;
+            }
+
+            if (originalOnWarn) {
+              originalOnWarn(warning, warn);
+            } else {
+              warn(warning);
+            }
+          };
+        },
+      },
+    ],
   },
 });

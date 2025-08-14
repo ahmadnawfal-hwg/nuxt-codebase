@@ -32,7 +32,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-// No props for now, but you can add props like `message`, `color`, etc.
-</script>

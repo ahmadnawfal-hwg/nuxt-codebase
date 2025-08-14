@@ -54,7 +54,7 @@ Example:
 
 ```ts
 import { defineStore } from 'pinia';
-import type { ApiCallbacks } from '~/types/api';
+import type { ApiCallbacks, ApiError } from '~/types/api';
 
 type Post = {
   id: number;
@@ -69,7 +69,7 @@ export const usePostStore = defineStore('post', {
   state: () => ({
     data: [] as Post[],
     isLoading: true,
-    error: null as string | null,
+    error: null as ApiError | null,
   }),
 
   actions: {
@@ -83,7 +83,7 @@ export const usePostStore = defineStore('post', {
           this.data = res;
         },
         onError: (err) => {
-          this.error = typeof err === 'string' ? err : 'failed fetch data';
+          this.error = err;
         },
         onSettled: () => {
           this.isLoading = false;
